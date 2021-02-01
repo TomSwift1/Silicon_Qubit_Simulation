@@ -12,7 +12,7 @@ log_level = logging.INFO
 import qutip.control.pulseoptim as cpo
 
 
-#CNOT gate - target H is sigma x
+#X gate - target H is sigma x
 
 # processor == quantum device
 # driven by Hamiltonians- drift (constant) is in z and control (time dependent) is in x
@@ -23,7 +23,7 @@ H_d = sigmaz()
 H_c = [sigmax()]
 # start point for the gate evolution
 U_0 = qeye(2)
-# Target for the gate evolution CNOT gate
+# Target for the gate evolution X gate
 U_targ = sigmax()
 
 # Defining time evolution parameters
