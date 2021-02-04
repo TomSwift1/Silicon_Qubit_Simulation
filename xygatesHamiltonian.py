@@ -22,9 +22,9 @@ def H(delta,phi,omega = 65000000):
     """
 
     Args:
-        delta:
-        phi:
-        omega:
+        delta: detuning
+        phi: angle of rotation wrt to sigmax and sigmay / radians
+        omega: frequency / Hz
 
     Returns:
 
