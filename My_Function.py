@@ -3,7 +3,7 @@ from qutip import *
 import numpy as np
 
 hbar = 1
-w_1 = 65*10**6
+w_1 = 60*10**6
 
 def spin_hamiltonian(delta,phi):
     
@@ -30,6 +30,43 @@ def hadamard_evolution(delta):
     final_state = general_evolution(state1,theta,phi,delta)
     
     fid = fidelity(plus_state*plus_state.dag(),final_state*final_state.dag())
+    
+    return fid
+
+def x_evolution(delta):
+    test_state = -1j*basis(2,1)
+    
+    #Rx by pi rotation
+    psi = basis(2,0)
+    phi = 0
+    theta = pi
+    final_state = general_evolution(psi,theta,phi,delta)
+    
+    fid = fidelity(test_state*test_state.dag(),final_state*final_state.dag())
+    
+    return fid
+
+def opt_x_evolution(delta):
+    test_state = (1j*basis(2,1) + basis(2,0))/sqrt(2)
+    #Following Jonathon Jones Optimised 90x
+    
+    #Rx by 385 rotation
+    psi = basis(2,0)
+    phi = 0
+    theta = pi*(385/180)
+    state1 = general_evolution(psi,theta,phi,delta)
+
+    #R -x by pi rotation
+    phi = pi
+    theta = pi*(320/180)
+    state2 = general_evolution(state1,theta,phi,delta)
+    
+    #Rx by pi rotation
+    phi = 0
+    theta = pi*(25/180)
+    final_state = general_evolution(state2,theta,phi,delta)
+    
+    fid = fidelity(test_state*test_state.dag(),final_state*final_state.dag())
     
     return fid
 
