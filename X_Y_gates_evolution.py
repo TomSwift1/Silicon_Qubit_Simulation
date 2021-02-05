@@ -4,9 +4,8 @@ import copy
 from numpy import *
 import matplotlib.pyplot as plt
 import qutip.logging_utils as logging
-logger = logging.get_logger()
-# Set this to None or logging.WARN for 'quiet' execution
-log_level = logging.INFO
+from pylab import meshgrid,cm,imshow,contour,clabel,colorbar,axis,title,show
+
 # QuTiP control modules
 import qutip.control.pulseoptim as cpo
 
@@ -109,8 +108,8 @@ print("Fidelity of Y gate:", fidelity_y)
 #DRIFT due to our PERMANENT MAGNET
 g = 2
 mu = 1.760 * (10)**11 #gyromagnetic ratio electron
-B1 = 3e-6 #teslas
-delta = (g * mu * B1)
+B1 = 3e-3 #teslas
+delta = g * mu * B1
 initial = basis(2,0)
 
 #XGATE
@@ -118,13 +117,13 @@ final_state_x = evolution_H(initial,delta,0, np.pi)
 print("Fidelity of X gate with a drift:", fidelity(test_state_x * test_state_x.dag(),final_state_x*final_state_x.dag()))
 
 
-#YGATE
+#YGATE FIDELITY ERROR PERMANENT MAGNET
 final_state_y = evolution_H(initial,delta,np.pi/2, np.pi)
 print("Fidelity of Y gate with a drift:", fidelity(test_state_y * test_state_y.dag(), final_state_y * final_state_y.dag()))
 
 
-def create_grid(sep):
-    x = np.arange(-2 * sep, 3 * sep, sep)
+def grid(ind_sep):
+    x = np.arange(-2 * ind_sep, 3 * ind_sep, ind_sep)
     xx, yy = np.meshgrid(x, x)
 
     mat = np.zeros([len(xx), len(xx)])
@@ -134,3 +133,68 @@ def create_grid(sep):
             mat[i, j] = (xx[i][j] ** 2 + yy[i][j] ** 2)
 
     return mat
+
+
+sep = 0.2
+tot_field_variation = 5*(10**(-3))
+final_grid = grid(sep)
+
+b_field = final_grid * tot_field_variation
+delta_Y= b_field * 1.7588199959*(10**11)
+
+
+with np.nditer(delta_Y, op_flags=['readwrite']) as it:
+    for x in it:
+           x[...] = fidelity(test_state_y * test_state_y.dag(), evolution_H(initial,x,np.pi/2, np.pi) * evolution_H(initial,x,np.pi/2, np.pi).dag())
+
+
+im = imshow((1-delta_Y)*100,cmap=cm.RdBu,extent=(-2.5*sep, 2.5*sep, 2.5*sep, -2.5*sep))
+colorbar(im)
+plt.xlabel('x/mm')
+plt.ylabel('y/mm')
+plt.title('Y-Gate %Error Fidelity')
+plt.savefig("Y_gate_fidelity2.png")
+plt.show()
+
+#YGATE FIDELITY ERROR SOLENOID
+
+#DRIFT due to solenoid
+g = 2
+mu = 1.760 * (10)**11 #gyromagnetic ratio electron
+B1 = 2e-6 #teslas
+delta = (g * mu * B1)
+initial = basis(2,0)
+
+def grid(ind_sep):
+    x = np.arange(-2 * ind_sep, 3 * ind_sep, ind_sep)
+    xx, yy = np.meshgrid(x, x)
+
+    mat = np.zeros([len(xx), len(xx)])
+
+    for i in range(len(xx)):
+        for j in range(len(xx)):
+            mat[i, j] = (xx[i][j] ** 2 + yy[i][j] ** 2)
+
+    return mat
+
+
+sep = 0.2
+tot_field_variation = 5*(10**(-6))
+final_grid = grid(sep)
+
+b_field = final_grid * tot_field_variation
+delta_Y= b_field * 1.7588199959*(10**11)
+
+
+with np.nditer(delta_Y, op_flags=['readwrite']) as it:
+    for x in it:
+           x[...] = fidelity(test_state_y * test_state_y.dag(), evolution_H(initial,x,np.pi/2, np.pi) * evolution_H(initial,x,np.pi/2, np.pi).dag())
+
+
+im = imshow((1-delta_Y)*100,cmap=cm.RdBu,extent=(-2.5*sep, 2.5*sep, 2.5*sep, -2.5*sep))
+colorbar(im)
+plt.xlabel('x/mm')
+plt.ylabel('y/mm')
+plt.title('Y-Gate %Error Fidelity')
+plt.savefig("Y_gate_fidelity_solenoid2.png")
+plt.show()
