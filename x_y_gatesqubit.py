@@ -23,7 +23,7 @@ up = basis(2,0) # i.e. the column vector (1,0)
 down = basis(2,1) # i.e. the column vector (0,1)
 
 #define a function of rotations
-def rot(time, direction, omega = 65000000, ):
+def rot(theta, direction):
     """
 
     Args:
@@ -40,12 +40,12 @@ def rot(time, direction, omega = 65000000, ):
         rotation = Qobj(
             [
                 [
-                    np.cos( (omega * time)/2 ),
-                    -np.sin((omega * time)/2 )*1j,
+                    np.cos(theta/2),
+                    -np.sin(theta/2 )*1j,
                 ],
                 [
-                    -np.sin((omega * time)/2 )*1j,
-                    np.cos((omega * time)/2 )],
+                    -np.sin(theta/2 )*1j,
+                    np.cos(theta/2 )],
             ]
         )
         return rotation
