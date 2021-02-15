@@ -4,7 +4,7 @@ import copy
 from numpy import *
 import matplotlib.pyplot as plt
 import qutip.logging_utils as logging
-from pylab import meshgrid,cm,imshow,contour,clabel,colorbar,axis,title,show
+from pylab import *
 
 # QuTiP control modules
 import qutip.control.pulseoptim as cpo
@@ -100,7 +100,7 @@ initial = basis(2,0)
 fidelity_x = fidelity(test_state_x * test_state_x.dag(), evolution_H(initial,0,0,np.pi) * evolution_H(initial,0,0, np.pi).dag())
 print("Fidelity of X gate: ", fidelity_x)
 
-test_state_y= 1j * basis(2,1)
+test_state_y= -1j*basis(2,1)
 fidelity_y = fidelity(test_state_y * test_state_y.dag(), evolution_H(initial,0,np.pi/2, np.pi) * evolution_H(initial,0,np.pi/2, np.pi).dag())
 print("Fidelity of Y gate:", fidelity_y)
 
